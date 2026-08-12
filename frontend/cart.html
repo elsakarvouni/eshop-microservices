@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Οι Παραγγελίες μου</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-0">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">Το e-Shop μου</a>
+
+        <button class="btn btn-outline-light me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#categoryMenu" aria-controls="categoryMenu">
+             <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="navbar-nav me-auto">
+            <a class="nav-link hide-on-mobile" href="index.html">Αρχική</a>
+
+            <a class="nav-link text-danger fw-bold hide-on-mobile" href="wishlist.html" id="navWishlist">
+                <i class="fas fa-heart"></i> (<span id="wishlistCount" class="wishlist-count-badge">0</span>)
+            </a>
+
+            <a class="nav-link text-warning fw-bold hide-on-mobile" href="cart.html" id="navCart">
+                🛒 Καλάθι (<span id="cartCount" class="cart-count-badge">0</span>)
+            </a>
+        </div>
+
+        <div class="dropdown me-3 d-none" id="navNotifications">
+            <a class="text-white text-decoration-none position-relative dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-bell fs-5"></i>
+                <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationsDropdown" id="notificationsList" style="width: 300px;">
+                <li><h6 class="dropdown-header">Ειδοποιήσεις Παραγγελιών</h6></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><span class="dropdown-item text-muted small">Δεν υπάρχουν νέες ειδοποιήσεις.</span></li>
+            </ul>
+        </div>
+        
+        <div class="d-flex align-items-center">
+            <div id="navGuest">
+                <a href="login.html" class="btn btn-outline-light btn-sm me-2">Σύνδεση</a>
+                <a href="register.html" class="btn btn-primary btn-sm">Εγγραφή</a>
+            </div>
+
+            <div id="navUser" class="d-none">
+                <div class="d-flex align-items-center">
+                    <button id="logoutBtn" class="btn btn-danger btn-sm me-3">Αποσύνδεση</button>
+                    
+                    <a href="profile.html" class="text-white fs-4 text-decoration-none hide-on-mobile" title="Το Προφίλ μου">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+    <div class="bg-dark text-warning py-2 mb-4 mt-0 marquee-container shadow-sm small fw-bold">
+        <div class="marquee-text">
+            <i class="bi bi-truck me-2"></i> Δωρεάν Μεταφορικά για αγορές άνω των 100€! 
+            <span class="mx-5 text-muted">|</span> 
+            <i class="bi bi-box-seam me-2"></i> Άμεση αποστολή σε όλη την Ελλάδα
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="mb-4">Το Καλάθι μου</h2>
+
+        <div id="alertMessage"></div>
+
+        <div class="row mt-4">
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-cart3"></i> Τα Προϊόντα μου</h5>
+                    </div>
+                    <div class="card-body p-0 table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Προϊόν</th>
+                                    <th>Τιμή</th>
+                                    <th>Ποσότητα</th>
+                                    <th>Σύνολο</th>
+                                    <th>Ενέργεια</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-geo-alt"></i> Στοιχεία Αποστολής</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">ΔΙΕΥΘΥΝΣΗ ΑΠΟΣΤΟΛΗΣ *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-house-door"></i></span>
+                                    <input type="text" id="addressInput" class="form-control" placeholder="π.χ. Ερμού 12, Αθήνα" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">ΤΗΛΕΦΩΝΟ ΕΠΙΚΟΙΝΩΝΙΑΣ *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                                    <input type="tel" id="phoneInput" class="form-control" placeholder="π.χ. 6971234567" required>
+                                </div>
+                            </div>
+                            <hr class="my-4">
+                            <h5 class="fw-bold mb-3"><i class="bi bi-credit-card me-2"></i>Τρόπος Πληρωμής</h5>
+                            <div class="mb-3">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="payDelivery" value="delivery" checked onchange="togglePaymentForm()">
+                                    <label class="form-check-label fw-bold" for="payDelivery">
+                                        Αντικαταβολή (Πληρωμή στην πόρτα σας)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="payCard" value="card" onchange="togglePaymentForm()">
+                                    <label class="form-check-label fw-bold" for="payCard">
+                                        Πιστωτική / Χρεωστική Κάρτα
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="cardDetailsForm" class="p-3 mb-4 bg-white border rounded shadow-sm d-none">
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted fw-bold">Ονοματεπώνυμο Κατόχου</label>
+                                    <input type="text" class="form-control" id="cardName" placeholder="π.χ. ΓΕΩΡΓΙΟΣ ΠΑΠΑΔΟΠΟΥΛΟΣ">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted fw-bold">Αριθμός Κάρτας</label>
+                                    <input type="text" class="form-control" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19">
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="form-label small text-muted fw-bold">Ημερομηνία Λήξης</label>
+                                        <input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small text-muted fw-bold">CVV</label>
+                                        <input type="text" class="form-control" id="cardCvv" placeholder="123" maxlength="3">
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-end">
+                                    <small class="text-success fw-bold"><i class="bi bi-lock-fill"></i> Ασφαλές Mock Περιβάλλον</small>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <label class="form-label text-muted small fw-bold">ΣΧΟΛΙΑ ΠΑΡΑΓΓΕΛΙΑΣ (Προαιρετικό)</label>
+                                <textarea id="orderNotes" class="form-control" rows="2" placeholder="π.χ. Το κουδούνι γράφει Παπαδόπουλος"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow border-primary sticky-top" style="top: 20px;">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h5 class="mb-0 fw-bold">Σύνοψη Παραγγελίας</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Αξία Προϊόντων</span>
+                            <span class="fw-bold" id="cartSubtotal">€0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Μεταφορικά έξοδα</span>
+                            <span class="fw-bold" id="shippingCost">€0.00</span>
+                        </div>
+        
+                        <div id="freeShippingMessage" class="text-end text-primary small mb-3 fw-bold"></div>
+
+                        <div class="input-group mb-3 mt-3">
+                            <input type="text" id="promoInput" class="form-control text-uppercase" placeholder="Κωδικός έκπτωσης">
+                            <button class="btn btn-outline-primary fw-bold" type="button" onclick="applyPromoCode()">Εφαρμογή</button>
+                        </div>
+
+                        <div id="discountRow" class="d-flex justify-content-between mb-1 d-none text-success">
+                            <span>Έκπτωση <small id="discountLabel"></small></span>
+                            <span class="fw-bold" id="discountAmount">-€0.00</span>
+                        </div>
+                        <div id="removePromoRow" class="text-end mb-3 d-none">
+                            <small><a href="javascript:void(0)" class="text-danger text-decoration-none" onclick="removePromoCode()">Αφαίρεση κουπονιού</a></small>
+                        </div>
+        
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="h5 fw-bold mb-0">Τελικό Σύνολο</span>
+                            <span class="h4 fw-bold text-primary mb-0" id="cartTotal">€0.00</span>
+                        </div>
+
+                        <button id="checkoutBtn" class="btn btn-success w-100 btn-lg fw-bold shadow-sm">
+                            <i class="bi bi-shield-check me-2"></i> Ολοκλήρωση Αγοράς
+                        </button>
+                    
+                        <div class="text-center mt-3 text-muted small">
+                            <i class="bi bi-lock-fill"></i> Ασφαλής Συναλλαγή
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </div> 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="cart.js"></script>
+
+    <footer class="custom-footer pt-5 pb-4 mt-5 w-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="footer-title mb-4">ONLINE ΑΓΟΡΕΣ</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="profile.html">Ο λογαριασμός μου</a></li>
+                        <li><a href="payment-methods.html">Τρόποι πληρωμής</a></li>
+                        <li><a href="shipping.html">Έξοδα αποστολής</a></li>
+                        <li><a href="returns.html">Επιστροφές</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="footer-title mb-4">ΕΞΥΠΗΡΕΤΗΣΗ ΠΕΛΑΤΩΝ</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="contact.html">Επικοινωνία</a></li>
+                        <li><a href="support.html">Τεχνική Υποστήριξη</a></li>
+                        <li><a href="#">Βοήθεια & συμβουλή</a></li>
+                        <li><a href="orders.html">Πορεία παραγγελίας</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="footer-title mb-4">ΑΚΟΛΟΥΘΗΣΤΕ ΜΑΣ</h5>
+                    <div class="footer-socials d-flex">
+                        <a href="#" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <nav class="mobile-bottom-nav d-md-none">
+        <a href="index.html" class="mobile-nav-item">
+            <i class="bi bi-house-door-fill"></i>
+            <span>Αρχική</span>
+        </a>
+        <a href="wishlist.html" class="mobile-nav-item">
+            <i class="bi bi-heart-fill"></i>
+            <span>Αγαπημένα</span>
+            <span class="mobile-nav-badge wishlist-count-badge">0</span>
+        </a>
+        <a href="cart.html" class="mobile-nav-item active">
+            <i class="bi bi-cart-fill"></i>
+            <span>Καλάθι</span>
+            <span class="mobile-nav-badge cart-count-badge">0</span>
+        </a>
+        <a href="profile.html" class="mobile-nav-item">
+            <i class="bi bi-person-fill"></i>
+            <span>Προφίλ</span>
+        </a>
+    </nav>
+</body>
+</html>

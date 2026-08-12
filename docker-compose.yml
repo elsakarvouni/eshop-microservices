@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  postgres-user-db:
+    image: postgres:15
+    container_name: user_database
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-product-db:
+    image: mongo:latest
+    container_name: product_database
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- ΝΕΑ ΒΑΣΗ ΓΙΑ ΤΙΣ ΠΑΡΑΓΓΕΛΙΕΣ (MONGODB) ---
+  mongo-order-db:
+    image: mongo:latest
+    container_name: order_database
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports:
+      - "27018:27017" # Βάζουμε 27018 στο host για να μην τρακάρει με το Product DB!
+    volumes:
+      - mongo_order_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq-broker:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_message_broker
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- ΕΔΩ ΜΠΑΙΝΟΥΝ ΤΑ ΔΙΚΑ ΜΑΣ SERVICES ---
+
+  user-service-app:
+    build: ./user-service
+    container_name: user_service_container
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      DB_HOST: postgres-user-db
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres-user-db:
+        condition: service_healthy
+
+  product-service-app:
+    build: ./product-service
+    container_name: product_service_container
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      MONGO_USER: ${MONGO_ROOT_USER}
+      MONGO_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports:
+      - "3002:3002"
+    depends_on:
+      rabbitmq-broker:
+        condition: service_healthy
+      mongo-product-db:
+        condition: service_healthy
+
+  order-service-app:
+    build: ./order-service
+    container_name: order_service_container
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      MONGO_USER: ${MONGO_ROOT_USER}
+      MONGO_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports:
+      - "3003:3003"
+    depends_on:
+      rabbitmq-broker:
+        condition: service_healthy
+      mongo-order-db: # Ενημερώθηκε για να κοιτάει τη MongoDB των παραγγελιών
+        condition: service_healthy
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api_gateway_container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service-app
+      - product-service-app
+      - order-service-app
+
+# --- ΕΔΩ ΔΗΛΩΝΟΥΜΕ ΤΑ VOLUMES ΣΤΟ DOCKER ---
+volumes:
+  postgres_data:
+  mongo_data:
+  mongo_order_data: # Νέο volume για τα δεδομένα των παραγγελιών

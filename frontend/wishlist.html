@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Η Λίστα Επιθυμιών μου</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-0">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Το e-Shop μου</a>
+            
+            <button class="btn btn-outline-light me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#categoryMenu">
+                 <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="navbar-nav me-auto">
+                <a class="nav-link hide-on-mobile" href="index.html">Αρχική</a>
+                
+                <a class="nav-link text-danger fw-bold active hide-on-mobile" href="wishlist.html" id="navWishlist">
+                    <i class="fas fa-heart"></i> (<span id="wishlistCount" class="wishlist-count-badge">0</span>)
+                </a>
+                
+                <a class="nav-link text-warning fw-bold hide-on-mobile" href="cart.html" id="navCart">
+                    🛒 Καλάθι (<span id="cartCount" class="cart-count-badge">0</span>)
+                </a>
+            </div>
+
+            <div class="dropdown me-3 d-none" id="navNotifications">
+                <a class="text-white text-decoration-none position-relative dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationsDropdown" id="notificationsList" style="width: 300px;">
+                    <li><h6 class="dropdown-header">Ειδοποιήσεις Παραγγελιών</h6></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><span class="dropdown-item text-muted small">Δεν υπάρχουν νέες ειδοποιήσεις.</span></li>
+                </ul>
+            </div>
+            
+            <div class="d-flex align-items-center">
+                <div id="navGuest">
+                    <a href="login.html" class="btn btn-outline-light btn-sm me-2">Σύνδεση</a>
+                    <a href="register.html" class="btn btn-primary btn-sm">Εγγραφή</a>
+                </div>
+                
+                <div id="navUser" class="d-none">
+                    <div class="d-flex align-items-center">
+                        <button id="logoutBtn" class="btn btn-danger btn-sm me-3">Αποσύνδεση</button>
+                        <a href="profile.html" class="text-white fs-4 text-decoration-none hide-on-mobile" title="Το Προφίλ μου">
+                            <i class="fas fa-user-circle"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="bg-dark text-warning py-2 mb-4 mt-0 marquee-container shadow-sm small fw-bold">
+        <div class="marquee-text">
+            <i class="bi bi-truck me-2"></i> Δωρεάν Μεταφορικά για αγορές άνω των 100€! 
+            <span class="mx-5 text-muted">|</span> 
+            <i class="bi bi-box-seam me-2"></i> Άμεση αποστολή σε όλη την Ελλάδα
+        </div>
+    </div>
+
+    <div class="container mt-4 mb-5">
+        <h2 class="mb-4 text-danger fw-bold"><i class="fas fa-heart"></i> Τα Αγαπημένα μου</h2>
+
+        <div id="alertMessage"></div>
+
+        <div class="row" id="wishlistGrid"></div>
+    </div>
+
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0 rounded-4">
+            <div class="modal-header bg-dark text-white rounded-top-4">
+                <h5 class="modal-title fw-bold" id="reviewModalLabel">Αξιολόγηση Προϊόντος</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <p id="reviewProductName" class="text-dark fw-bold mb-3 fs-5"></p>
+                
+                <div class="mb-4">
+                    <label class="form-label text-muted small d-block mb-2">Επιλέξτε βαθμολογία</label>
+                    <div id="starContainer" class="fs-1 text-warning" style="cursor: pointer; letter-spacing: 8px;">
+                        <i class="bi bi-star" data-value="1"></i>
+                        <i class="bi bi-star" data-value="2"></i>
+                        <i class="bi bi-star" data-value="3"></i>
+                        <i class="bi bi-star" data-value="4"></i>
+                        <i class="bi bi-star" data-value="5"></i>
+                    </div>
+                    <input type="hidden" id="selectedRatingValue" value="5">
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label for="reviewCommentText" class="form-label fw-bold small">Το σχόλιό σας</label>
+                    <textarea class="form-control rounded-3" id="reviewCommentText" rows="4" placeholder="Γράψτε τις εντυπώσεις σας για το προϊόν..."></textarea>
+                </div>
+
+                <button type="button" id="submitReviewBtn" class="btn btn-primary w-100 py-2 fw-bold rounded-3">Υποβολή Αξιολόγησης</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const userEmail = localStorage.getItem('email');
+        const navWishlist = document.getElementById('navWishlist');
+        const navNotifications = document.getElementById('navNotifications');
+        const navGuest = document.getElementById('navGuest');
+        const navUser = document.getElementById('navUser');
+
+        if (token && token !== 'null' && token !== 'undefined' && token !== '') {
+            if (navNotifications) navNotifications.classList.remove('d-none');
+            if (navGuest) navGuest.classList.add('d-none');
+            if (navUser) navUser.classList.remove('d-none');
+            fetchAllPagesOrders(userEmail, token);
+        } else {
+            // Η λίστα επιθυμιών αποθηκεύεται τοπικά (localStorage), δεν απαιτεί σύνδεση
+            if (navGuest) navGuest.classList.remove('d-none');
+            if (navUser) navUser.classList.add('d-none');
+        }
+
+        if (document.getElementById('logoutBtn')) {
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('email');
+                localStorage.removeItem('role');
+                localStorage.removeItem('userProfile');
+                localStorage.removeItem('cart');
+                window.location.href = 'index.html';
+            });
+        }
+
+        const submitBtn = document.getElementById('submitReviewBtn');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', () => {
+                const rating = parseInt(document.getElementById('selectedRatingValue').value);
+                const comment = document.getElementById('reviewCommentText').value;
+                submitReview(activeReviewProductId, rating, comment);
+            });
+        }
+
+        renderWishlistCards();
+        updateCartCounter();
+
+        const currentWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        document.querySelectorAll('.wishlist-count-badge').forEach(el => el.innerText = currentWishlist.length);
+    });
+
+    function getProductRatingBadge(productId) {
+        const allReviews = JSON.parse(localStorage.getItem('productReviews')) || [];
+        const productReviews = allReviews.filter(r => r.productId && r.productId.toString() === productId.toString());
+
+        if (productReviews.length === 0) {
+            return `
+                <span class="badge bg-white text-dark shadow-sm border px-2 py-1 small position-absolute top-0 start-0 m-3 rounded-pill fw-normal pointer-events-none" style="z-index: 5;">
+                    0 σχόλια
+                </span>
+            `;
+        }
+
+        const totalRating = productReviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0);
+        const average = (totalRating / productReviews.length).toFixed(1);
+
+        return `
+            <span class="badge bg-white text-dark shadow-sm border px-2 py-1 small position-absolute top-0 start-0 m-3 rounded-pill d-flex align-items-center gap-1 shadow-sm pointer-events-none" style="z-index: 5;">
+                <i class="bi bi-star-fill text-warning"></i>
+                <span class="fw-bold">${average}</span>
+                <span class="text-muted small">(${productReviews.length})</span>
+            </span>
+        `;
+    }
+
+    function renderWishlistCards() {
+        const container = document.getElementById('wishlistGrid');
+        let currentWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+        if (currentWishlist.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center mt-5">
+                    <i class="far fa-heart fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Η λίστα επιθυμιών σας είναι άδεια.</h4>
+                    <a href="index.html" class="btn btn-primary mt-3">Πάμε για ψώνια!</a>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        currentWishlist.forEach(item => {
+            const productId = item.id;
+            const safeName = (item.name || 'Προϊόν').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            const ratingBadgeHtml = getProductRatingBadge(productId);
+
+            const col = document.createElement('div');
+            col.className = 'col-md-4 mb-4';
+            
+            col.innerHTML = `
+                <div class="card shadow-sm h-100 position-relative transition-hover">
+                    ${ratingBadgeHtml}
+                    <button class="btn btn-light rounded-circle position-absolute m-2 shadow-sm" 
+                            style="top: 0; right: 0; z-index: 20;" 
+                            onclick="removeAndReload('${productId}')" title="Αφαίρεση από τα αγαπημένα">
+                        <i class="fas fa-heart text-danger fs-5"></i>
+                    </button>
+                    
+                    <a href="product.html?id=${productId}" class="text-decoration-none text-dark stretched-link">
+                        <img src="${item.image}" class="card-img-top p-3" alt="${item.name}" style="height: 200px; object-fit: contain;">
+                    </a>
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold">${item.name}</h5>
+                        <p class="card-text text-muted small">${item.description || ''}</p>
+                        <h4 class="mt-auto text-primary mb-3 text-center">${item.hasVariants ? 'από ' : ''}€${Number(item.price).toFixed(2)}</h4>
+
+                        ${item.hasVariants ? `
+                        <a href="product.html?id=${productId}" class="btn btn-success w-100 position-relative" style="z-index: 20;">
+                            <i class="bi bi-cart-plus"></i> Επιλογές & Αγορά
+                        </a>
+                        ` : `
+                        <button class="btn btn-success w-100 position-relative" style="z-index: 20;" onclick="addToCartFromWishlist('${productId}', '${safeName}', ${item.price})">
+                            <i class="bi bi-cart-plus"></i> Προσθήκη στο Καλάθι
+                        </button>
+                        `}
+                    </div>
+                </div>
+            `;
+            container.appendChild(col);
+        });
+    }
+
+    window.removeAndReload = function(id) {
+        let wl = JSON.parse(localStorage.getItem('wishlist')) || [];
+        wl = wl.filter(item => item.id !== id);
+        localStorage.setItem('wishlist', JSON.stringify(wl));
+
+        document.querySelectorAll('.wishlist-count-badge').forEach(el => el.innerText = wl.length);
+        renderWishlistCards();
+    };
+
+    window.addToCartFromWishlist = function(productId, productName, price) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const existingProduct = cart.find(item => item.productId === productId);
+
+        if (existingProduct) {
+            existingProduct.quantity += 1;
+        } else {
+            cart.push({ productId, name: productName, price, quantity: 1 });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCounter();
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Προστέθηκε στο καλάθι!', showConfirmButton: false, timer: 1500 });
+        }
+    };
+
+    function updateCartCounter() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let totalItems = 0;
+        cart.forEach(item => totalItems += item.quantity);
+        document.querySelectorAll('.cart-count-badge').forEach(el => el.innerText = totalItems);
+    }
+
+    async function fetchAllPagesOrders(email, token) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/orders/user/${email}`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+            });
+            if (!response.ok) return;
+            const responseData = await response.json();
+            let ordersArray = Array.isArray(responseData) ? responseData : (responseData.orders || responseData.data || []);
+            checkGlobalNotifications(ordersArray);
+        } catch (e) {
+            console.error('Error fetching orders:', e);
+        }
+    }
+
+    window.markNotificationAsRead = function(orderId, status) {
+        let readNotifs = JSON.parse(localStorage.getItem('readNotifications')) || [];
+        const key = `${orderId}_${status}`;
+        if (!readNotifs.includes(key)) {
+            readNotifs.push(key);
+            localStorage.setItem('readNotifications', JSON.stringify(readNotifs));
+        }
+    };
+
+    function checkGlobalNotifications(orders) {
+        const badge = document.getElementById('notificationBadge');
+        const list = document.getElementById('notificationsList');
+        if (!badge || !list) return;
+
+        const reviewedProducts = JSON.parse(localStorage.getItem('reviewedProducts')) || [];
+        const readNotifs = JSON.parse(localStorage.getItem('readNotifications')) || [];
+        let notifications = [];
+
+        orders.forEach(order => {
+            const status = (order.status || '').trim().toUpperCase();
+            const orderId = (order._id || order.id || '---').toString().substring(0, 8);
+            const statusKey = `${orderId}_${status}`;
+
+            if (status === 'PENDING' && !readNotifs.includes(statusKey)) {
+                notifications.push({ type: 'info', orderId, status, title: 'Η παραγγελία καταχωρήθηκε!', desc: `Η παραγγελία #${orderId} είναι σε αναμονή.`, icon: 'bi-hourglass-split text-primary' });
+            } else if (status === 'SHIPPED' && !readNotifs.includes(statusKey)) {
+                notifications.push({ type: 'info', orderId, status, title: 'Η παραγγελία εστάλη!', desc: `Η παραγγελία #${orderId} βρίσκεται καθ' οδόν!`, icon: 'bi-truck text-success' });
+            } else if (status === 'CANCELLED' && !readNotifs.includes(statusKey)) {
+                notifications.push({ type: 'info', orderId, status, title: 'Ακύρωση Παραγγελίας', desc: `Η παραγγελία #${orderId} έχει ακυρωθεί.`, icon: 'bi-x-circle text-danger' });
+            }
+            
+            if (status === 'COMPLETED' || status === 'DELIVERED') {
+                if (order.items && order.items.length > 0) {
+                    order.items.forEach(item => {
+                        const productId = item.productId || item.id || item._id || item.product;
+                        const productName = item.name || item.productName || 'Προϊόν';
+                        if (productId) {
+                            const stringId = productId.toString();
+                            if (!reviewedProducts.includes(stringId)) {
+                                if (!notifications.some(n => n.type === 'review' && n.productId === stringId)) {
+                                    notifications.push({ type: 'review', productId: stringId, productName: productName, title: 'Εκκρεμεί Αξιολόγηση', desc: productName, icon: 'bi-star-fill text-warning' });
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        if (notifications.length > 0) {
+            badge.innerText = notifications.length;
+            badge.style.display = 'inline-block';
+            let htmlContent = `<li><h6 class="dropdown-header text-dark fw-bold">Ειδοποιήσεις (${notifications.length})</h6></li><li><hr class="dropdown-divider"></li>`;
+            
+            notifications.reverse().forEach(notif => {
+                if (notif.type === 'review') {
+                    const safeName = notif.productName.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                    htmlContent += `
+                        <li class="px-2 mb-2">
+                            <a class="dropdown-item py-2 px-3 bg-light rounded text-wrap shadow-sm border" href="#" onclick="openReviewModal('${notif.productId}', '${safeName}')">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi ${notif.icon} fs-4 me-2 flex-shrink-0"></i>
+                                    <div>
+                                        <small class="text-dark d-block fw-bold">${notif.title}</small>
+                                        <span class="text-muted small">${notif.desc}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    `;
+                } else {
+                    htmlContent += `
+                        <li class="px-2 mb-2">
+                            <a href="orders.html" onclick="markNotificationAsRead('${notif.orderId}', '${notif.status}')" class="dropdown-item py-2 px-3 bg-light rounded text-wrap shadow-sm border">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi ${notif.icon} fs-4 me-2 flex-shrink-0"></i>
+                                    <div>
+                                        <small class="text-dark d-block fw-bold">${notif.title}</small>
+                                        <span class="text-muted small">${notif.desc}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    `;
+                }
+            });
+            list.innerHTML = htmlContent;
+        } else {
+            badge.style.display = 'none';
+            list.innerHTML = `<li><h6 class="dropdown-header">Ειδοποιήσεις Παραγγελιών</h6></li><li><hr class="dropdown-divider"></li><li><span class="dropdown-item text-muted small text-center py-2">Δεν υπάρχουν νέες ειδοποιήσεις.</span></li>`;
+        }
+    }
+
+    let activeReviewProductId = null;
+    window.openReviewModal = function(productId, productName) {
+        activeReviewProductId = productId;
+        document.getElementById('reviewModalLabel').innerText = `Αξιολόγηση: ${productName}`;
+        document.getElementById('reviewCommentText').value = '';
+        setRatingStarsGlobal(5);
+
+        const modalElement = document.getElementById('reviewModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+    };
+
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('#starContainer i')) {
+            const rating = parseInt(e.target.getAttribute('data-value'));
+            setRatingStarsGlobal(rating);
+        }
+    });
+
+    function setRatingStarsGlobal(rating) {
+        const inputVal = document.getElementById('selectedRatingValue');
+        if(inputVal) inputVal.value = rating;
+
+        const stars = document.querySelectorAll('#starContainer i');
+        stars.forEach(star => {
+            const val = parseInt(star.getAttribute('data-value'));
+            if (val <= rating) {
+                star.classList.remove('bi-star');
+                star.classList.add('bi-star-fill');
+            } else {
+                star.classList.remove('bi-star-fill');
+                star.classList.add('bi-star');
+            }
+        });
+    }
+
+    // Reviews live entirely in localStorage - there's no reviews service on the backend.
+    window.submitReview = function(productId, rating, comment) {
+        if (!productId) return;
+
+        const userEmail = localStorage.getItem('email');
+        const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
+        const userName = userProfile.name || (userEmail ? userEmail.split('@')[0] : 'Χρήστης');
+
+        const reviewData = { productId, userEmail, userName, rating, comment, createdAt: new Date().toISOString() };
+
+        let allReviews = JSON.parse(localStorage.getItem('productReviews')) || [];
+        allReviews.push(reviewData);
+        localStorage.setItem('productReviews', JSON.stringify(allReviews));
+
+        let reviewedProducts = JSON.parse(localStorage.getItem('reviewedProducts')) || [];
+        if (!reviewedProducts.includes(productId)) {
+            reviewedProducts.push(productId);
+            localStorage.setItem('reviewedProducts', JSON.stringify(reviewedProducts));
+        }
+
+        Swal.fire({ icon: 'success', title: 'Επιτυχία!', text: 'Η αξιολόγησή σας καταχωρήθηκε.', timer: 1500, showConfirmButton: false });
+
+        const modalElement = document.getElementById('reviewModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) modal.hide();
+    };
+</script>
+
+    <footer class="custom-footer pt-5 pb-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="footer-title mb-4">ONLINE ΑΓΟΡΕΣ</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="profile.html">Ο λογαριασμός μου</a></li>
+                        <li><a href="payment-methods.html">Τρόποι πληρωμής</a></li>
+                        <li><a href="shipping.html">Έξοδα αποστολής</a></li>
+                        <li><a href="returns.html">Επιστροφές</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="footer-title mb-4">ΕΞΥΠΗΡΕΤΗΣΗ ΠΕΛΑΤΩΝ</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="contact.html">Επικοινωνία</a></li>
+                        <li><a href="support.html">Τεχνική Υποστήριξη</a></li>
+                        <li><a href="#">Βοήθεια & συμβουλή</a></li>
+                        <li><a href="orders.html">Πορεία παραγγελίας</a></li>
+                        <li><a href="#">Πορεία επισκευής</a></li>
+                        <li><a href="#">Όροι εμπορικών ενεργειών</a></li>
+                        <li><a href="#">Καταστήματα</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 class="footer-title mb-4">ΑΚΟΛΟΥΘΗΣΤΕ ΜΑΣ</h5>
+                    <div class="footer-socials d-flex">
+                        <a href="#" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="wishlist.js"></script>
+
+    <nav class="mobile-bottom-nav d-md-none">
+        <a href="index.html" class="mobile-nav-item">
+            <i class="bi bi-house-door-fill"></i>
+            <span>Αρχική</span>
+        </a>
+        <a href="wishlist.html" class="mobile-nav-item active">
+            <i class="bi bi-heart-fill"></i>
+            <span>Αγαπημένα</span>
+            <span class="mobile-nav-badge wishlist-count-badge">0</span>
+        </a>
+        <a href="cart.html" class="mobile-nav-item">
+            <i class="bi bi-cart-fill"></i>
+            <span>Καλάθι</span>
+            <span class="mobile-nav-badge cart-count-badge">0</span>
+        </a>
+        <a href="profile.html" class="mobile-nav-item">
+            <i class="bi bi-person-fill"></i>
+            <span>Προφίλ</span>
+        </a>
+    </nav>
+</body>
+</html>

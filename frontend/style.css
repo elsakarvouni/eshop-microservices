@@ -1,0 +1,300 @@
+/* Modern Tech (indigo/navy) brand palette. Redefining Bootstrap 5.3's own CSS
+   variables here retints links, text-primary and bg-primary on every page
+   automatically, without touching any HTML. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --brand-navy: #0f172a;
+    --brand-navy-soft: #1e293b;
+    --brand-indigo: #4f46e5;
+    --brand-indigo-hover: #4338ca;
+    --brand-indigo-rgb: 79, 70, 229;
+    --brand-bg: #f8fafc;
+    --brand-card-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+    --brand-card-shadow-hover: 0 14px 30px rgba(15, 23, 42, 0.14);
+
+    --bs-primary: var(--brand-indigo);
+    --bs-primary-rgb: var(--brand-indigo-rgb);
+    --bs-link-color: var(--brand-indigo);
+    --bs-link-color-rgb: var(--brand-indigo-rgb);
+    --bs-link-hover-color: var(--brand-indigo-hover);
+    --bs-link-hover-color-rgb: 67, 56, 202;
+    --bs-body-font-family: 'Inter', 'Segoe UI', sans-serif;
+    --bs-body-bg: var(--brand-bg);
+}
+
+body {
+    background-color: var(--brand-bg);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: #1e293b;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+nav.navbar.bg-dark {
+    background-color: var(--brand-navy) !important;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.card {
+    border-radius: 14px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: var(--brand-card-shadow);
+}
+
+.transition-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.transition-hover:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--brand-card-shadow-hover);
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-success,
+.btn-primary {
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+}
+
+.btn-success:hover,
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+}
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    border-color: rgba(15, 23, 42, 0.12);
+}
+
+/* The Bootstrap CDN build hardcodes colors like #0d6efd/#86b7fe directly on several
+   components instead of referencing var(--bs-primary), so the :root override above
+   doesn't reach them. Re-declaring the component variables here is the only way to
+   get the whole site on the brand color instead of just links and body text. */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brand-indigo);
+    box-shadow: 0 0 0 .25rem rgba(var(--brand-indigo-rgb), .25);
+}
+
+.form-check-input:checked {
+    background-color: var(--brand-indigo);
+    border-color: var(--brand-indigo);
+}
+
+.form-check-input:focus {
+    border-color: var(--brand-indigo);
+    box-shadow: 0 0 0 .25rem rgba(var(--brand-indigo-rgb), .25);
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--brand-indigo);
+    --bs-btn-border-color: var(--brand-indigo);
+    --bs-btn-hover-bg: var(--brand-indigo-hover);
+    --bs-btn-hover-border-color: var(--brand-indigo-hover);
+    --bs-btn-active-bg: var(--brand-indigo-hover);
+    --bs-btn-active-border-color: var(--brand-indigo-hover);
+    --bs-btn-disabled-bg: var(--brand-indigo);
+    --bs-btn-disabled-border-color: var(--brand-indigo);
+    --bs-btn-focus-shadow-rgb: var(--brand-indigo-rgb);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--brand-indigo);
+    --bs-btn-border-color: var(--brand-indigo);
+    --bs-btn-hover-bg: var(--brand-indigo);
+    --bs-btn-hover-border-color: var(--brand-indigo);
+    --bs-btn-active-bg: var(--brand-indigo);
+    --bs-btn-active-border-color: var(--brand-indigo);
+    --bs-btn-disabled-color: var(--brand-indigo);
+    --bs-btn-disabled-border-color: var(--brand-indigo);
+    --bs-btn-focus-shadow-rgb: var(--brand-indigo-rgb);
+}
+
+.custom-footer {
+    background-color: var(--brand-navy);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+}
+
+.footer-title {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    font-size: 1.1rem;
+}
+
+.footer-links li {
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    color: #a3aebc;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.footer-socials a {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 15px;
+    font-size: 1.3rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.footer-socials a:hover {
+    background-color: var(--brand-indigo);
+    transform: translateY(-3px);
+}
+
+/* Scrolling announcement bar under the navbar */
+.marquee-container {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.marquee-text {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scroll-text 30s linear infinite;
+}
+
+.marquee-container:hover .marquee-text {
+    animation-play-state: paused;
+}
+
+@keyframes scroll-text {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-100%, 0); }
+}
+
+/* Native-app style bottom tab bar, mobile only (hidden at md and up via d-md-none
+   on the element itself). Leaves room at the bottom of the page on mobile so the
+   fixed bar never covers the footer or the last bit of page content. */
+@media (max-width: 767.98px) {
+    body {
+        padding-bottom: 64px;
+    }
+}
+
+/* Top navbar on mobile: brand top-left, notifications bell + login/logout
+   pinned together top-right (with a small gap so the dropdown caret doesn't
+   touch the button next to it). The categories toggle - on the handful of
+   pages that have one - drops to its own row directly under the brand,
+   far left. Every .navbar-nav link (Home/Wishlist/Cart/Orders) either has
+   its own bottom-bar equivalent or lives on the profile page instead. */
+@media (max-width: 767.98px) {
+    .navbar > .container {
+        flex-wrap: wrap;
+    }
+    .navbar > .container > .navbar-brand {
+        order: 1;
+    }
+    .navbar > .container > .dropdown.me-3 {
+        order: 2;
+        margin-left: auto !important;
+        margin-right: 0.5rem !important;
+    }
+    .navbar > .container > .d-flex.align-items-center {
+        order: 3;
+    }
+    .navbar > .container > button[data-bs-toggle="offcanvas"] {
+        order: 4;
+        margin-top: 0.5rem;
+    }
+}
+
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    display: flex;
+    background-color: #ffffff;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+    padding-bottom: env(safe-area-inset-bottom, 0); /* clears the home-indicator area on iOS */
+}
+
+.mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 0 6px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.68rem;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.15s ease;
+}
+
+.mobile-nav-item i {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.mobile-nav-item.active {
+    color: var(--brand-indigo);
+}
+
+.mobile-nav-badge {
+    position: absolute;
+    top: 2px;
+    right: 26%;
+    background-color: #dc3545;
+    color: #ffffff;
+    border-radius: 999px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 15px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+}
+
+/* Top-navbar controls that duplicate the bottom tab bar (Home/Wishlist/Cart/
+   Profile/Categories). Uses !important and its own class rather than d-none,
+   since a couple of these elements already get their d-none toggled by
+   login-state JS elsewhere. */
+@media (max-width: 767.98px) {
+    .hide-on-mobile {
+        display: none !important;
+    }
+}
