@@ -190,5 +190,6 @@ Product and order stock/authorization logic is tested against a real, in-memory 
 
 ## License
 
-No license has been specified for this project yet.
+All rights reserved. This project was built as a personal/student project — the source code is publicly visible for portfolio purposes, but no license is granted to copy, modify, or reuse it without permission.
+
 
